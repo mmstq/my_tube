@@ -28,7 +28,8 @@ class MyApp extends StatelessWidget {
         title: 'MyTube',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          appBarTheme: AppBarTheme(backgroundColor: Colors.white, ),
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
           useMaterial3: true,
         ),
         home: const ReelsHomePage(),

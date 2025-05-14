@@ -1,10 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/src/foundation/diagnostics.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:my_tube/domain/entities/video.dart';
 import 'package:my_tube/presentation/bloc/video_bloc.dart';
 import 'package:my_tube/presentation/pages/reels_page.dart';
+import 'package:my_tube/presentation/widgets/bottom_bar.dart';
+import 'package:tabler_icons/tabler_icons.dart';
 
 class ReelsHomePage extends StatefulWidget {
   const ReelsHomePage({super.key});
@@ -115,7 +118,8 @@ class _ReelsHomePageState extends State<ReelsHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('MyTube')),
+      appBar: getAppBar(),
+      bottomNavigationBar: BottomBar(selectedIndex: 0, onItemSelected: (index){}),
       body: BlocListener<VideoBloc, VideoState>(
         listener: (context, state) {
           // This is just to make sure we're listening to the bloc
@@ -146,7 +150,10 @@ class _ReelsHomePageState extends State<ReelsHomePage> {
     }
 
     return RefreshIndicator(
+      color: Colors.blue,
       onRefresh: () async {
+        await  Future.delayed(Duration(seconds: 2));
+
         setState(() {
           _currentPage = 1;
           _hasReachedMax = false;
@@ -342,3 +349,86 @@ class _ReelsHomePageState extends State<ReelsHomePage> {
     }
   }
 }
+
+  PreferredSize getAppBar() {
+    return PreferredSize(
+      preferredSize: Size.fromHeight(148),
+      child: SafeArea(
+        maintainBottomViewPadding: true,
+        child: Container(
+          color: Colors.white,
+          child: Column(
+            children: [
+              const SizedBox(height: 12,),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                child: Row(
+                  children: [
+                    Icon(TablerIcons.menu_2, size: 28, color: Colors.black54,),
+                    SizedBox(width: 16),
+                    Expanded(
+                      child: Container(
+                        padding: EdgeInsets.only(left: 16),
+                        decoration: BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.shade300,
+                              blurRadius: 4,
+                              offset: Offset(0, 2),
+                            ),
+                          ],
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.grey.shade300),
+                        ),
+                        child: TextField(
+                          decoration: InputDecoration(
+                            contentPadding: EdgeInsets.only(top: 12, right: 0),
+                            hintText: 'Search...',
+                            border: InputBorder.none,
+                            suffixIcon: Icon(Icons.arrow_forward_rounded, color: Colors.black54,),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 8),
+              SizedBox(
+                height: 40,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  padding: EdgeInsets.symmetric(horizontal: 12),
+                  itemCount: 6,
+                  separatorBuilder: (_, __) => SizedBox(width: 8),
+                  itemBuilder: (context, index) {
+                    final isSelected = index == 0; // "All" is selected by default
+                    return FilterChip(
+                      label: Text(
+                        ['All', 'Beauty & Fashion', 'Football', 'Cricket', 'News', 'Politics'][index],
+                        style: TextStyle(
+                          color: isSelected ? Colors.white : Colors.black87,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      selected: isSelected,
+                      showCheckmark: false,
+                      backgroundColor: Colors.grey.shade100,
+                      selectedColor: Colors.lightBlue,
+                      onSelected: (_) {},
+                      side: BorderSide.none,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }

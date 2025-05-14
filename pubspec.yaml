@@ -44,6 +44,7 @@ dependencies:
   video_player: ^2.9.5
   cached_network_image: ^3.4.1
   tabler_icons: ^2.5.0+1
+  hugeicons: ^0.0.11
 
 dev_dependencies:
   flutter_test:
