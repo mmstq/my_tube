@@ -1,15 +1,15 @@
 
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:my_tube/core/util/helper_functions.dart';
+import 'package:my_tube/presentation/pages/reels.dart';
 
 class BottomBar extends StatelessWidget {
   final int selectedIndex;
-  final Function(int) onItemSelected;
-
   const BottomBar({
     super.key,
     required this.selectedIndex,
-    required this.onItemSelected,
+
   });
 
   @override
@@ -26,7 +26,11 @@ class BottomBar extends StatelessWidget {
       ),
       child: BottomNavigationBar(
         currentIndex: selectedIndex,
-        onTap: onItemSelected,
+        onTap: (i){
+          if(i == 1){
+            navigateTo(context, Reels());
+          }
+        },
         showSelectedLabels: false,
         showUnselectedLabels: false,
         type: BottomNavigationBarType.fixed,

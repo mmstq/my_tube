@@ -1,13 +1,12 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/diagnostics.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:logger/logger.dart';
 import 'package:my_tube/domain/entities/video.dart';
-import 'package:my_tube/presentation/bloc/video_bloc.dart';
-import 'package:my_tube/presentation/pages/reels_page.dart';
+import 'package:my_tube/presentation/bloc/reels_home_bloc.dart';
+import 'package:my_tube/presentation/widgets/app_bar.dart';
 import 'package:my_tube/presentation/widgets/bottom_bar.dart';
-import 'package:tabler_icons/tabler_icons.dart';
+import 'package:my_tube/presentation/widgets/video_player_item.dart';
+import 'package:my_tube/presentation/widgets/video_widget.dart';
 
 class ReelsHomePage extends StatefulWidget {
   const ReelsHomePage({super.key});
@@ -17,93 +16,20 @@ class ReelsHomePage extends StatefulWidget {
 }
 
 class _ReelsHomePageState extends State<ReelsHomePage> {
-  static const int _pageLimit = 20;
   final ScrollController _scrollController = ScrollController();
-  StreamSubscription? _blocSubscription;
-  int _currentPage = 1;
-  bool _isLoading = false;
-  bool _hasReachedMax = false;
-  List<Video> _videos = [];
+  late final ReelsHomeBloc bloc;
 
   @override
   void initState() {
     super.initState();
+    bloc = context.read<ReelsHomeBloc>();
+    bloc.add(LoadInitialVideos());
     _scrollController.addListener(_onScroll);
-    _listenToBlocState();
-
-    // Fetch initial data
-    _fetchPage(_currentPage);
   }
 
   void _onScroll() {
-    final maxScroll = _scrollController.position.maxScrollExtent;
-    final currentScroll = _scrollController.position.pixels;
-
-    // Load more when user scrolls to 70% of the way to the bottom
-    if (currentScroll >= maxScroll * 0.7) {
-      _loadMore();
-    }
-  }
-
-  void _loadMore() {
-    if (!_isLoading && !_hasReachedMax) {
-      _fetchPage(_currentPage + 1);
-    }
-  }
-
-  void _fetchPage(int page) {
-    if (_isLoading) return;
-
-    setState(() {
-      _isLoading = true;
-    });
-
-    if (page == 1) {
-      // First page
-      context.read<VideoBloc>().add(FetchVideos(page: page, limit: _pageLimit));
-    } else {
-      // Subsequent pages
-      context.read<VideoBloc>().add(
-        LoadMoreVideos(page: page, limit: _pageLimit),
-      );
-    }
-  }
-
-  void _listenToBlocState() {
-    _blocSubscription = context.read<VideoBloc>().stream.listen((state) {
-      if (state is VideoPageLoaded) {
-        setState(() {
-          _isLoading = false;
-          _hasReachedMax = state.page == 7;
-
-          if (state.page == 1) {
-            _videos = state.videos;
-          } else {
-            _videos = [..._videos, ...state.videos];
-          }
-
-          _currentPage = state.page;
-        });
-      } else if (state is VideoError) {
-        setState(() {
-          _isLoading = false;
-        });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: ${state.message}'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    });
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (_blocSubscription == null) {
-      _listenToBlocState();
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent * 0.7) {
+      bloc.add(LoadMoreVideos());
     }
   }
 
@@ -111,324 +37,72 @@ class _ReelsHomePageState extends State<ReelsHomePage> {
   void dispose() {
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
-    _blocSubscription?.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: getAppBar(),
-      bottomNavigationBar: BottomBar(selectedIndex: 0, onItemSelected: (index){}),
-      body: BlocListener<VideoBloc, VideoState>(
-        listener: (context, state) {
-          // This is just to make sure we're listening to the bloc
-          // The actual handling is done in _listenToBlocState
-        },
-        child: _buildBody(),
-      ),
-    );
-  }
-
-  Widget _buildBody() {
-    if (_videos.isEmpty && _isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    } else if (_videos.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text('No videos found'),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () => _fetchPage(1),
-              child: const Text('Retry'),
-            ),
-          ],
-        ),
-      );
-    }
-
-    return RefreshIndicator(
-      color: Colors.blue,
-      onRefresh: () async {
-        await  Future.delayed(Duration(seconds: 2));
-
-        setState(() {
-          _currentPage = 1;
-          _hasReachedMax = false;
-          _videos = [];
-        });
-        _fetchPage(1);
-      },
-      child: GridView.builder(
-        controller: _scrollController,
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          childAspectRatio: 0.6,
-          crossAxisSpacing: 1.0,
-          mainAxisSpacing: 1.0,
-        ),
-        itemCount: _videos.length + (_hasReachedMax ? 1 : 0),
-        itemBuilder: (context, index) {
-          if (index >= _videos.length) {
-            context.read<VideoBloc>().add(
-              LoadMoreVideos(page: _currentPage + 1, limit: _pageLimit),
-            );
+      appBar: getAppBar(context),
+      bottomNavigationBar: BottomBar(selectedIndex: 0),
+      body: BlocBuilder<ReelsHomeBloc, ReelsHomeState>(
+        builder: (context, state) {
+          if (state is ReelsHomeLoading) {
             return const Center(child: CircularProgressIndicator());
+          } else if (state is ReelsHomeError) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Error: ${state.message}'),
+                  const SizedBox(height: 12),
+                  ElevatedButton(onPressed: () => bloc.add(LoadInitialVideos()), child: const Text('Retry')),
+                ],
+              ),
+            );
+          } else if (state is ReelsHomeLoaded) {
+            return RefreshIndicator(
+              onRefresh: () async {
+                bloc.add(RefreshVideos());
+              },
+              child: GridView.builder(
+                controller: _scrollController,
+                padding: const EdgeInsets.only(bottom: 60),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 0.6,
+                  crossAxisSpacing: 1,
+                  mainAxisSpacing: 1,
+                ),
+                itemCount: state.videos.length + (state.hasReachedMax ? 0 : 1),
+                itemBuilder: (context, index) {
+                  if (index >= state.videos.length) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  return buildVideoItem(state.videos[index], context);
+                },
+              ),
+            );
           }
-          return _buildVideoItem(_videos[index], context);
+          return const SizedBox.shrink();
         },
       ),
     );
-  }
-
-  Widget _buildVideoItem(Video video, BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        final videoBloc = context.read<VideoBloc>();
-        // Find the index of the selected video
-        final selectedIndex = _videos.indexOf(video);
-        // Dispatch SelectVideo event before navigation
-        videoBloc.add(SelectVideo(video: video, initialIndex: selectedIndex));
-
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder:
-                (context) => BlocProvider.value(
-                  value: videoBloc,
-                  child: ReelsPage(initialVideo: video,),
-                ),
-          ),
-        );
-      },
-      child: Container(
-        height: 300,
-        decoration: BoxDecoration(borderRadius: BorderRadius.circular(12)),
-        margin: const EdgeInsets.all(4.0),
-        child: Stack(
-          children: [
-            // Thumbnail section
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: CachedNetworkImage(
-                imageUrl: video.thumbCdnUrl ?? '',
-                height: 400,
-                fit: BoxFit.cover,
-                width: double.infinity,
-                placeholder:
-                    (context, url) => Container(
-                      color: Colors.grey[900],
-                      child: const Center(
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                    ),
-                errorWidget:
-                    (context, url, error) => Container(
-                      color: Colors.grey[900],
-                      child: const Center(
-                        child: Icon(Icons.error_outline, color: Colors.white54),
-                      ),
-                    ),
-              ),
-            ),
-
-            // Duration overlay
-            Positioned(
-              top: 8,
-              right: 8,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.8),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Text(
-                  _formatDuration(video.duration ?? 0),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 11,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              left: 8,
-              bottom: 8,
-              right: 8,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.black26,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    // Channel avatar
-                    CircleAvatar(
-                      radius: 16,
-                      backgroundColor: Colors.grey.shade800,
-                      backgroundImage:
-                          video.user.profilePictureCdn != null &&
-                                  video.user.profilePictureCdn!.startsWith(
-                                    'http',
-                                  )
-                              ? CachedNetworkImageProvider(
-                                video.user.profilePictureCdn!,
-                              )
-                              : null,
-                      child:
-                          video.user.profilePictureCdn == null ||
-                                  !video.user.profilePictureCdn!.startsWith(
-                                    'http',
-                                  )
-                              ? Text(
-                                video.user.fullName?.isNotEmpty == true
-                                    ? video.user.fullName![0].toUpperCase()
-                                    : '?',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              )
-                              : null,
-                    ),
-                    const SizedBox(width: 8),
-
-                    // Title and metadata
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            video.title ?? 'No Title',
-                            style: const TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.white,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          Text(
-                            video.user.fullName ?? 'Unknown',
-                            style: TextStyle(
-                              color: Colors.grey.shade200,
-                              fontSize: 11,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  String _formatDuration(int seconds) {
-    final duration = Duration(seconds: seconds);
-    String twoDigits(int n) => n.toString().padLeft(2, '0');
-
-    if (duration.inHours > 0) {
-      return '${duration.inHours}:${twoDigits(duration.inMinutes.remainder(60))}:${twoDigits(duration.inSeconds.remainder(60))}';
-    } else {
-      return '${duration.inMinutes}:${twoDigits(duration.inSeconds.remainder(60))}';
-    }
   }
 }
 
-  PreferredSize getAppBar() {
-    return PreferredSize(
-      preferredSize: Size.fromHeight(148),
-      child: SafeArea(
-        maintainBottomViewPadding: true,
-        child: Container(
-          color: Colors.white,
-          child: Column(
-            children: [
-              const SizedBox(height: 12,),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                child: Row(
-                  children: [
-                    Icon(TablerIcons.menu_2, size: 28, color: Colors.black54,),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: Container(
-                        padding: EdgeInsets.only(left: 16),
-                        decoration: BoxDecoration(
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.shade300,
-                              blurRadius: 4,
-                              offset: Offset(0, 2),
-                            ),
-                          ],
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.grey.shade300),
-                        ),
-                        child: TextField(
-                          decoration: InputDecoration(
-                            contentPadding: EdgeInsets.only(top: 12, right: 0),
-                            hintText: 'Search...',
-                            border: InputBorder.none,
-                            suffixIcon: Icon(Icons.arrow_forward_rounded, color: Colors.black54,),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 8),
-              SizedBox(
-                height: 40,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  padding: EdgeInsets.symmetric(horizontal: 12),
-                  itemCount: 6,
-                  separatorBuilder: (_, __) => SizedBox(width: 8),
-                  itemBuilder: (context, index) {
-                    final isSelected = index == 0; // "All" is selected by default
-                    return FilterChip(
-                      label: Text(
-                        ['All', 'Beauty & Fashion', 'Football', 'Cricket', 'News', 'Politics'][index],
-                        style: TextStyle(
-                          color: isSelected ? Colors.white : Colors.black87,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      selected: isSelected,
-                      showCheckmark: false,
-                      backgroundColor: Colors.grey.shade100,
-                      selectedColor: Colors.lightBlue,
-                      onSelected: (_) {},
-                      side: BorderSide.none,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+class ReelsPage extends StatelessWidget {
+  final Video initialVideo;
+  const ReelsPage({super.key, required this.initialVideo});
 
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+  @override
+  Widget build(BuildContext context) {
+    Logger().d(initialVideo.cdnUrl);
+    Logger().d(initialVideo.url);
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: SafeArea(child: VideoPlayerItem(video: initialVideo, heroTag: 'video-${initialVideo.id}')),
     );
   }
+}
+

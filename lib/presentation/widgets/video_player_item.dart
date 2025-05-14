@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:like_button/like_button.dart';
 import 'package:logger/logger.dart';
+import 'package:tabler_icons/tabler_icons.dart';
 import 'package:video_player/video_player.dart';
 import 'package:my_tube/domain/entities/video.dart';
 
@@ -8,11 +10,7 @@ class VideoPlayerItem extends StatefulWidget {
   final Video video;
   final String heroTag;
 
-  const VideoPlayerItem({
-    super.key,
-    required this.video,
-    required this.heroTag,
-  });
+  const VideoPlayerItem({super.key, required this.video, required this.heroTag});
 
   @override
   State<VideoPlayerItem> createState() => _VideoPlayerItemState();
@@ -57,12 +55,9 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
     } catch (e) {
       debugPrint('Error initializing video: $e');
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error playing video: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error playing video: ${e.toString()}'), backgroundColor: Colors.red));
       }
     }
   }
@@ -98,12 +93,8 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
           Container(height: double.infinity),
           // Video or thumbnail
           _isInitialized
-              ? AspectRatio(
-                aspectRatio: _controller.value.aspectRatio,
-                child: VideoPlayer(_controller),
-              )
-              : widget.video.thumbCdnUrl != null &&
-                  widget.video.thumbCdnUrl!.isNotEmpty
+              ? AspectRatio(aspectRatio: _controller.value.aspectRatio, child: VideoPlayer(_controller))
+              : widget.video.thumbCdnUrl != null && widget.video.thumbCdnUrl!.isNotEmpty
               ? Image.network(
                 widget.video.thumbCdnUrl!,
                 fit: BoxFit.cover,
@@ -117,8 +108,7 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
                     child: CircularProgressIndicator(
                       value:
                           loadingProgress.expectedTotalBytes != null
-                              ? loadingProgress.cumulativeBytesLoaded /
-                                  loadingProgress.expectedTotalBytes!
+                              ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
                               : null,
                     ),
                   );
@@ -128,15 +118,21 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
 
           // Overlay with user info and actions
           Positioned(
-            top: 48,
+            top: 16,
+            left: 8,
+            child: IconButton(
+              color: Colors.white,
+              style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.white24)),
+              onPressed: () => Navigator.pop(context),
+              icon: Icon(TablerIcons.x),
+            ),
+          ),
+          Positioned(
+            bottom: 110,
             left: 16,
             child: Text(
               widget.video.title!,
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
+              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
             ),
           ),
           Positioned(
@@ -165,35 +161,24 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
                         backgroundColor: Colors.grey.shade800,
                         backgroundImage:
                             widget.video.user.profilePictureCdn != null &&
-                                    widget.video.user.profilePictureCdn!
-                                        .startsWith('http')
-                                ? NetworkImage(
-                                  widget.video.user.profilePictureCdn!,
-                                )
+                                    widget.video.user.profilePictureCdn!.startsWith('http')
+                                ? NetworkImage(widget.video.user.profilePictureCdn!)
                                 : null,
                         child:
                             widget.video.user.profilePictureCdn == null ||
-                                    !widget.video.user.profilePictureCdn!
-                                        .startsWith('http')
+                                    !widget.video.user.profilePictureCdn!.startsWith('http')
                                 ? Text(
                                   widget.video.user.fullName?.isNotEmpty == true
-                                      ? widget.video.user.fullName![0]
-                                          .toUpperCase()
+                                      ? widget.video.user.fullName![0].toUpperCase()
                                       : '?',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                                 )
                                 : null,
                       ),
                       const SizedBox(width: 8),
                       Text(
                         widget.video.user.fullName!,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -213,20 +198,13 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
                     children: [
                       Text(
                         '${widget.video.totalViews} views',
-                        style: const TextStyle(
-                          color: Colors.white70,
-                          fontSize: 12,
-                        ),
+                        style: const TextStyle(color: Colors.white70, fontSize: 12),
                       ),
-                      if (widget.video.language != null &&
-                          widget.video.language!.isNotEmpty) ...[
+                      if (widget.video.language != null && widget.video.language!.isNotEmpty) ...[
                         const SizedBox(width: 8),
                         Text(
                           '•  ${widget.video.language}',
-                          style: const TextStyle(
-                            color: Colors.white70,
-                            fontSize: 12,
-                          ),
+                          style: const TextStyle(color: Colors.white70, fontSize: 12),
                         ),
                       ],
                     ],
@@ -243,10 +221,7 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
             child: Column(
               children: [
                 LikeButton(
-                  circleColor: CircleColor(
-                    start: Color(0xFF1DA1F2),
-                    end: Color(0xFF1DA1F2),
-                  ),
+                  circleColor: CircleColor(start: Colors.red, end: Colors.redAccent),
                   bubblesColor: BubblesColor(
                     dotPrimaryColor: Color(0xFF1DA1F2),
                     dotSecondaryColor: Color(0xFF17BF63),
@@ -255,10 +230,8 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
                   ),
                   likeBuilder: (bool isLiked) {
                     return Icon(
-                      isLiked
-                          ? Icons.favorite_rounded
-                          : Icons.favorite_border_rounded,
-                      color: isLiked ? Colors.blue : Colors.white,
+                      isLiked ? Icons.favorite_rounded : HugeIcons.strokeRoundedFavourite,
+                      color: isLiked ? Colors.redAccent : Colors.white,
                     );
                   },
                   countPostion: CountPostion.bottom,
@@ -268,37 +241,21 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
                   },
                 ),
                 const SizedBox(height: 4),
-                // Comment button
-                IconButton(
-                  icon: const Icon(Icons.chat_rounded, color: Colors.white),
-                  onPressed: () {},
-                ),
-                Text(
-                  '${widget.video.totalComments}',
-                  style: const TextStyle(color: Colors.white),
-                ),
-                const SizedBox(height: 16),
-
-                // Share button
-                IconButton(
-                  icon: const Icon(Icons.share, color: Colors.white),
-                  onPressed: () {},
-                ),
-                Text(
-                  '${widget.video.totalShare}',
-                  style: const TextStyle(color: Colors.white),
-                ),
+                IconButton(icon: const Icon(HugeIcons.strokeRoundedComment03, color: Colors.white), onPressed: () {}),
+                Text('${widget.video.totalComments}', style: const TextStyle(color: Colors.white)),
+                const SizedBox(height: 4),
+                IconButton(icon: const Icon(HugeIcons.strokeRoundedBookmark02, color: Colors.white), onPressed: () {}),
+                Text('${widget.video.totalWishlist}', style: const TextStyle(color: Colors.white)),
+                const SizedBox(height: 4),
+                IconButton(icon: const Icon(HugeIcons.strokeRoundedShare08, color: Colors.white), onPressed: () {}),
+                Text('${widget.video.totalShare}', style: const TextStyle(color: Colors.white)),
               ],
             ),
           ),
 
           // Play/Pause indicator
           if (!_isPlaying && _isInitialized)
-            Icon(
-              Icons.play_arrow,
-              size: 80,
-              color: Colors.white.withValues(alpha: 0.7),
-            ),
+            Icon(Icons.play_arrow, size: 80, color: Colors.white.withValues(alpha: 0.7)),
         ],
       ),
     );
