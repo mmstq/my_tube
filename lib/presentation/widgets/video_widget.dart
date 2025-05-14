@@ -4,7 +4,7 @@ import 'package:my_tube/core/util/helper_functions.dart';
 import 'package:my_tube/domain/entities/video.dart';
 import 'package:my_tube/presentation/pages/reels_homepage.dart';
 
-Widget buildVideoItem(Video video, BuildContext context) {
+Widget buildVideoItem(Video video, BuildContext context, {double height = 300}) {
   return GestureDetector(
     onTap: () {
       Navigator.push(
@@ -47,7 +47,7 @@ Widget buildVideoItem(Video video, BuildContext context) {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.8),
+                color: Colors.black.withValues(alpha: 0.8),
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Text(

@@ -7,6 +7,7 @@ import 'package:my_tube/presentation/widgets/app_bar.dart';
 import 'package:my_tube/presentation/widgets/bottom_bar.dart';
 import 'package:my_tube/presentation/widgets/video_player_item.dart';
 import 'package:my_tube/presentation/widgets/video_widget.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
 class ReelsHomePage extends StatefulWidget {
   const ReelsHomePage({super.key});
@@ -28,7 +29,8 @@ class _ReelsHomePageState extends State<ReelsHomePage> {
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent * 0.7) {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent * 0.7) {
       bloc.add(LoadMoreVideos());
     }
   }
@@ -56,7 +58,10 @@ class _ReelsHomePageState extends State<ReelsHomePage> {
                 children: [
                   Text('Error: ${state.message}'),
                   const SizedBox(height: 12),
-                  ElevatedButton(onPressed: () => bloc.add(LoadInitialVideos()), child: const Text('Retry')),
+                  ElevatedButton(
+                    onPressed: () => bloc.add(LoadInitialVideos()),
+                    child: const Text('Retry'),
+                  ),
                 ],
               ),
             );
@@ -65,21 +70,43 @@ class _ReelsHomePageState extends State<ReelsHomePage> {
               onRefresh: () async {
                 bloc.add(RefreshVideos());
               },
-              child: GridView.builder(
+              child: MasonryGridView.builder(
                 controller: _scrollController,
                 padding: const EdgeInsets.only(bottom: 60),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 0.6,
-                  crossAxisSpacing: 1,
-                  mainAxisSpacing: 1,
-                ),
                 itemCount: state.videos.length + (state.hasReachedMax ? 0 : 1),
+                gridDelegate:
+                const SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                ),
+                mainAxisSpacing: 4,
+                crossAxisSpacing: 4,
                 itemBuilder: (context, index) {
                   if (index >= state.videos.length) {
                     return const Center(child: CircularProgressIndicator());
                   }
-                  return buildVideoItem(state.videos[index], context);
+
+                  final video = state.videos[index];
+                  // Calculate aspect ratio using video dimensions
+                  double aspectRatio = 9 / 16; // default vertical aspect ratio
+
+                  if (video.videoWidth != null &&
+                      video.videoHeight != null &&
+                      video.videoHeight! > 0 &&
+                      video.videoWidth! > 0) {
+                    aspectRatio = video.videoWidth! / video.videoHeight!;
+                  }
+
+                  // Calculate item height based on screen width and aspect ratio
+                  final screenWidth = MediaQuery.of(context).size.width;
+                  final itemWidth =
+                      (screenWidth / 2) - 4; // 2 columns with 4px spacing
+                  final itemHeight = itemWidth / aspectRatio;
+
+                  return Container(
+                  height: itemHeight,
+                  margin: const EdgeInsets.all(2),
+                  child: buildVideoItem(video, context, height: itemHeight),
+                  );
                 },
               ),
             );
@@ -101,8 +128,15 @@ class ReelsPage extends StatelessWidget {
     Logger().d(initialVideo.url);
     return Scaffold(
       backgroundColor: Colors.black,
-      body: SafeArea(child: VideoPlayerItem(video: initialVideo, heroTag: 'video-${initialVideo.id}')),
+      body: SafeArea(
+        child: VideoPlayerItem(
+          video: initialVideo,
+          heroTag: 'video-${initialVideo.id}',
+        ),
+      ),
     );
   }
 }
+
+
 
