@@ -18,30 +18,18 @@ class VideoModel {
   final int? totalShare;
   final int? totalWishlist;
   final int? duration;
-  final String? byteAddedOn;
-  final String? byteUpdatedOn;
-  final dynamic bunnyStreamVideoId;
-  final String? bytePlusVideoId;
   final String? language;
   final String? orientation;
-  final int? bunnyEncodingStatus;
-  final dynamic deletedAt;
   final int? videoHeight;
   final int? videoWidth;
-  final String? location;
   final int? isPrivate;
   final int? isHideComment;
   final String? description;
-  final dynamic archivedAt;
   final User user;
   final Category? category;
-  final List<dynamic>? resolutions;
   final bool? isLiked;
   final bool? isWished;
   final bool? isFollow;
-  final String? metaDescription;
-  final String? metaKeywords;
-  final String? videoAspectRatio;
 
   VideoModel({
     required this.id,
@@ -61,30 +49,18 @@ class VideoModel {
     required this.totalShare,
     required this.totalWishlist,
     required this.duration,
-    required this.byteAddedOn,
-    required this.byteUpdatedOn,
-    required this.bunnyStreamVideoId,
-    required this.bytePlusVideoId,
     required this.language,
     required this.orientation,
-    required this.bunnyEncodingStatus,
-    required this.deletedAt,
     required this.videoHeight,
     required this.videoWidth,
-    required this.location,
     required this.isPrivate,
     required this.isHideComment,
     required this.description,
-    required this.archivedAt,
     required this.user,
     required this.category,
-    required this.resolutions,
     required this.isLiked,
     required this.isWished,
     required this.isFollow,
-    required this.metaDescription,
-    required this.metaKeywords,
-    required this.videoAspectRatio,
   });
 
   factory VideoModel.fromJson(Map<String, dynamic> json) {
@@ -106,30 +82,18 @@ class VideoModel {
       totalShare: json['total_share'],
       totalWishlist: json['total_wishlist'],
       duration: json['duration'],
-      byteAddedOn: json['byte_added_on'],
-      byteUpdatedOn: json['byte_updated_on'],
-      bunnyStreamVideoId: json['bunny_stream_video_id'],
-      bytePlusVideoId: json['byte_plus_video_id'],
       language: json['language'],
       orientation: json['orientation'],
-      bunnyEncodingStatus: json['bunny_encoding_status'],
-      deletedAt: json['deleted_at'],
       videoHeight: json['video_height'],
       videoWidth: json['video_width'],
-      location: json['location'],
       isPrivate: json['is_private'],
       isHideComment: json['is_hide_comment'],
       description: json['description'],
-      archivedAt: json['archived_at'],
       user: User.fromJson(json['user']),
       category: Category.fromJson(json['category']),
       isLiked: json['is_liked'],
       isWished: json['is_wished'],
       isFollow: json['is_follow'],
-      metaDescription: json['meta_description'],
-      metaKeywords: json['meta_keywords'],
-      videoAspectRatio: json['video_aspect_ratio'],
-      resolutions: json['resolutions'],
     );
   }
 
@@ -152,29 +116,18 @@ class VideoModel {
     data['total_share'] = totalShare;
     data['total_wishlist'] = totalWishlist;
     data['duration'] = duration;
-    data['byte_added_on'] = byteAddedOn;
-    data['byte_updated_on'] = byteUpdatedOn;
-    data['bunny_stream_video_id'] = bunnyStreamVideoId;
-    data['byte_plus_video_id'] = bytePlusVideoId;
     data['language'] = language;
     data['orientation'] = orientation;
-    data['bunny_encoding_status'] = bunnyEncodingStatus;
-    data['deleted_at'] = deletedAt;
     data['video_height'] = videoHeight;
     data['video_width'] = videoWidth;
-    data['location'] = location;
     data['is_private'] = isPrivate;
     data['is_hide_comment'] = isHideComment;
     data['description'] = description;
-    data['archived_at'] = archivedAt;
     data['user'] = user.toJson();
     data['category'] = category?.toJson();
     data['is_liked'] = isLiked;
     data['is_wished'] = isWished;
     data['is_follow'] = isFollow;
-    data['meta_description'] = metaDescription;
-    data['meta_keywords'] = metaKeywords;
-    data['video_aspect_ratio'] = videoAspectRatio;
     return data;
   }
 }

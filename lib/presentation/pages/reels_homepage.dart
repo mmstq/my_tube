@@ -191,7 +191,7 @@ class _ReelsHomePageState extends State<ReelsHomePage> {
             builder:
                 (context) => BlocProvider.value(
                   value: videoBloc,
-                  child: const ReelsPage(),
+                  child: ReelsPage(initialVideo: video,),
                 ),
           ),
         );
