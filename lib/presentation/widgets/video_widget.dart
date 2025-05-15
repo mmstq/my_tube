@@ -33,12 +33,14 @@ Widget buildVideoItem(Video video, BuildContext context, int selectedIndex, List
               height: isHorizontal ? 116 : 400,
               width: double.infinity,
               placeholder:
-                  (_, __) => Container(
+                  (_, __) =>
+                  Container(
                     color: Colors.grey[900],
                     child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
                   ),
               errorWidget:
-                  (_, __, ___) => Container(
+                  (_, __, ___) =>
+                  Container(
                     color: Colors.grey[900],
                     child: const Center(child: Icon(Icons.error_outline, color: Colors.white54)),
                   ),
@@ -61,114 +63,101 @@ Widget buildVideoItem(Video video, BuildContext context, int selectedIndex, List
           ),
           isHorizontal
               ? Positioned(
-                left: isHorizontal ? 0 : 8,
-                bottom: 0,
-                right: isHorizontal ? 0 : 8,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 4),
-                  child: Row(
-                    children: [
-                      CachedNetworkImage(
-                        imageUrl: video.user.profilePictureCdn ?? '',
-                        imageBuilder:
-                            (context, imageProvider) => CircleAvatar(
-                              radius: 16,
-                              backgroundColor: Colors.grey.shade800,
-                              backgroundImage: imageProvider,
-                            ),
-                        errorWidget: (context, url, error) {
-                          final fallbackInitial =
-                              (video.user.fullName?.isNotEmpty == true) ? video.user.fullName![0].toUpperCase() : '?';
-                          return CircleAvatar(
-                            radius: 16,
-                            backgroundColor: Colors.grey.shade800,
-                            child: Text(
-                              fallbackInitial,
-                              style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
-                            ),
-                          );
-                        },
-                        placeholder: (context, url) => CircleAvatar(radius: 16, backgroundColor: Colors.grey.shade800),
-                      ),
-
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              video.title ?? 'No Title',
-                              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Colors.black54),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            Text(
-                              video.user.fullName ?? 'Unknown',
-                              style: TextStyle(color: Colors.grey, fontSize: 11),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
+            left: isHorizontal ? 0 : 8,
+            bottom: 0,
+            right: isHorizontal ? 0 : 8,
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Row(
+                children: [
+                  getAvatar(video.user.profilePicture),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          video.title ?? 'No Title',
+                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Colors.black54),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-              )
-              : Positioned(
-                left: 8,
-                bottom: 8,
-                right: 8,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                  decoration: BoxDecoration(color: Colors.black26, borderRadius: BorderRadius.circular(8)),
-                  child: Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 16,
-                        backgroundColor: Colors.grey.shade800,
-                        backgroundImage:
-                            video.user.profilePictureCdn?.startsWith('http') == true
-                                ? CachedNetworkImageProvider(video.user.profilePictureCdn!)
-                                : null,
-                        child:
-                            video.user.profilePictureCdn?.startsWith('http') != true
-                                ? Text(
-                                  video.user.fullName?.isNotEmpty == true ? video.user.fullName![0].toUpperCase() : '?',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                )
-                                : null,
-                      ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              video.title ?? 'No Title',
-                              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Colors.white),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            Text(
-                              video.user.fullName ?? 'Unknown',
-                              style: TextStyle(color: Colors.grey.shade200, fontSize: 11),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
+                        Text(
+                          video.user.fullName ?? 'Unknown',
+                          style: TextStyle(color: Colors.grey, fontSize: 11),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
+                ],
               ),
+            ),
+          )
+              : Positioned(
+            left: 8,
+            bottom: 8,
+            right: 8,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+              decoration: BoxDecoration(color: Colors.black26, borderRadius: BorderRadius.circular(8)),
+              child: Row(
+                children: [
+                  getAvatar(video.user.profilePicture),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          video.title ?? 'No Title',
+                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Colors.white),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          video.user.fullName ?? 'Unknown',
+                          style: TextStyle(color: Colors.grey.shade200, fontSize: 11),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
+    ),
+  );
+}
+
+Widget getAvatar(String? url) {
+  final invalidUrl = url == null || url.isEmpty || !url.startsWith('http');
+  final fallbackInitial = invalidUrl ? '?' : url[0].toUpperCase();
+
+  return invalidUrl ? getAvatarWithText(fallbackInitial) : CachedNetworkImage(
+    imageUrl: url ?? '',
+    imageBuilder:
+        (context, imageProvider) =>
+        CircleAvatar(radius: 16, backgroundColor: Colors.grey.shade800, backgroundImage: imageProvider),
+    errorWidget: (context, url, error) {
+      return getAvatarWithText(fallbackInitial);
+    },
+    placeholder: (context, url) => CircleAvatar(radius: 16, backgroundColor: Colors.grey.shade800),
+  );
+}
+
+Widget getAvatarWithText(String fallbackInitial) {
+  return CircleAvatar(
+    radius: 16,
+    backgroundColor: Colors.grey.shade800,
+    child: Text(
+      fallbackInitial,
+      style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
     ),
   );
 }

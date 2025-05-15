@@ -42,7 +42,7 @@ class BottomBar extends StatelessWidget {
           BottomNavigationBarItem(
             icon: Icon(HugeIcons.strokeRoundedPlayList),
             activeIcon: Icon(HugeIcons.strokeRoundedPlayList),
-            label: 'Library',
+            label: 'Reels',
           ),
           BottomNavigationBarItem(
             icon: Icon(HugeIcons.strokeRoundedPlusSignCircle),

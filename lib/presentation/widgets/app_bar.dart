@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:tabler_icons/tabler_icons.dart';
+import 'package:hugeicons/hugeicons.dart';
 
 PreferredSize getAppBar(BuildContext context) {
   final tab = 'All';
+  final labels = ['All', 'Beauty & Fashion', 'Football', 'Cricket', 'News', 'Politics'];
   return PreferredSize(
     preferredSize: const Size.fromHeight(148),
     child: SafeArea(
@@ -21,7 +22,7 @@ PreferredSize getAppBar(BuildContext context) {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               child: Row(
                 children: [
-                  const Icon(TablerIcons.menu_2, size: 28, color: Colors.black54),
+                  const Icon(HugeIcons.strokeRoundedMenu01, size: 28, color: Colors.black54),
                   const SizedBox(width: 16),
                   Expanded(
                     child: Container(
@@ -57,7 +58,6 @@ PreferredSize getAppBar(BuildContext context) {
                 itemCount: 6,
                 separatorBuilder: (_, __) => const SizedBox(width: 8),
                 itemBuilder: (_, index) {
-                  final labels = ['All', 'Beauty & Fashion', 'Football', 'Cricket', 'News', 'Politics'];
                   return FilterChip(
                     label: Text(
                       labels[index],

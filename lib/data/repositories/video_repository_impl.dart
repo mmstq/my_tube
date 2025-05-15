@@ -38,7 +38,7 @@ class VideoRepositoryImpl implements VideoRepository {
     return await cacheUtil.clearCache();
   }
 
-  // Helper method to convert VideoModel to Video entity
+    // Helper method to convert VideoModel to Video entity
     Video _convertToEntity(VideoModel model) {
     return Video(
       id: model.id,

@@ -18,11 +18,9 @@ dependencies:
   get_it: ^8.0.3
   shared_preferences: ^2.5.3
   path_provider: ^2.1.5
-  logger: ^2.5.0
   like_button: ^2.0.5
   video_player: ^2.9.5
   cached_network_image: ^3.4.1
-  tabler_icons: ^2.5.0+1
   hugeicons: ^0.0.11
   flutter_staggered_grid_view: ^0.7.0
 
@@ -39,7 +37,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
-
+# Launcher Icons Setup
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
@@ -59,6 +57,8 @@ flutter_launcher_icons:
     generate: true
     image_path: "assets/icon/icon.png"
 
+
+# Splash Screen Setup
 flutter_native_splash:
   color: "#000000" # or your background color
   image: "assets/icon/icon.png"

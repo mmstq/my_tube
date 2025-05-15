@@ -26,9 +26,8 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
   }
 
   Future<void> _initializeVideoController() async {
-    final videoUrl = widget.video.cdnUrl ?? widget.video.url;
+    final videoUrl = widget.video.cdnUrl;
     if (videoUrl == null) {
-      debugPrint('Error: No video URL available');
       return;
     }
 

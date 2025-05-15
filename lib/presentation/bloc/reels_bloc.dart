@@ -149,7 +149,6 @@ class ReelsBloc extends Bloc<ReelsEvent, ReelsState> {
     try {
       final currentState = state;
       final newVideos = await getVideos(Params(page: page, limit: limit));
-      debugPrint('Loaded ${newVideos.length} videos for page $page');
 
       // Only consider it the last page if we got zero videos
       final isLastPage = newVideos.isEmpty;
