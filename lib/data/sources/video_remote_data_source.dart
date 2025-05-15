@@ -23,8 +23,6 @@ class VideoRemoteDataSourceImpl implements VideoRemoteDataSource {
       headers: {'Content-Type': 'application/json'},
     );
 
-    Logger().d(response.body);
-
     if (response.statusCode == 200) {
       final Map<String, dynamic> jsonResponse = json.decode(response.body);
       final List<dynamic> videosJson = jsonResponse['data']?['data'] ?? [];

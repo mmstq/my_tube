@@ -18,8 +18,6 @@ Widget buildVideoItem(
   final isHorizontal = video.orientation == 'landscape';
   return GestureDetector(
     onTap: () {
-      Logger().d(video.url);
-      return;
       Navigator.push(
         context,
         MaterialPageRoute(

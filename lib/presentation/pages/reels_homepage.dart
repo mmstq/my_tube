@@ -21,6 +21,7 @@ class ReelsFeedPage extends StatefulWidget {
 class _ReelsFeedPageState extends State<ReelsFeedPage> {
   final ScrollController _scrollController = ScrollController();
   late final home_bloc.ReelsFeedBloc bloc;
+  bool isFetchingMore = false;
 
   @override
   void initState() {
@@ -31,11 +32,14 @@ class _ReelsFeedPageState extends State<ReelsFeedPage> {
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent * 0.7) {
-      bloc.add(home_bloc.LoadMoreVideos());
+      if (_scrollController.position.pixels >=
+          _scrollController.position.maxScrollExtent * 0.7 &&
+          !isFetchingMore) {
+        isFetchingMore = true;
+        bloc.add(home_bloc.LoadMoreVideos());
+        Future.delayed(Duration(seconds: 1), () => isFetchingMore = false);
+      }
     }
-  }
 
   @override
   void dispose() {
