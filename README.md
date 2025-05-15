@@ -21,10 +21,10 @@ A Flutter application that fetches and displays video data in a reels-style inte
 ## Demo Videos
 
 ### Android Demo
-[![Android Demo](myTube(android).mp4)](myTube(android).mp4)
+https://github.com/mmstq/my_tube/raw/refs/heads/master/myTube(android).mp4
 
 ### iOS Demo
-[![iOS Demo](myTube(ios).mp4)](myTube(ios).mp4)
+https://github.com/mmstq/my_tube/raw/refs/heads/master/myTube(ios).mp4
 
 ## Architecture
 
