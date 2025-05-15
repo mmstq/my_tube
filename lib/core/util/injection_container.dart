@@ -6,16 +6,16 @@ import 'package:my_tube/data/repositories/video_repository_impl.dart';
 import 'package:my_tube/data/sources/video_remote_data_source.dart';
 import 'package:my_tube/domain/repositories/video_repository.dart';
 import 'package:my_tube/domain/usecases/get_videos.dart';
-import 'package:my_tube/presentation/bloc/video_bloc.dart';
-import 'package:my_tube/presentation/bloc/reels_home_bloc.dart';
+import 'package:my_tube/presentation/bloc/reels_bloc.dart';
+import 'package:my_tube/presentation/bloc/reels_feed_bloc.dart';
 
 final GetIt sl = GetIt.instance;
 
 Future<void> init() async {
   // BLoC
-  sl.registerFactory<VideoBloc>(() => VideoBloc(getVideos: sl<GetVideos>()));
-  sl.registerFactory<ReelsHomeBloc>(
-    () => ReelsHomeBloc(getVideos: sl<GetVideos>()),
+  sl.registerFactory<ReelsBloc>(() => ReelsBloc(getVideos: sl<GetVideos>()));
+  sl.registerFactory<ReelsFeedBloc>(
+    () => ReelsFeedBloc(getVideos: sl<GetVideos>()),
   );
 
   // Use cases
