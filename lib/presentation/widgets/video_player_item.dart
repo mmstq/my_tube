@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:like_button/like_button.dart';
-import 'package:logger/logger.dart';
-import 'package:tabler_icons/tabler_icons.dart';
 import 'package:video_player/video_player.dart';
 import 'package:my_tube/domain/entities/video.dart';
 

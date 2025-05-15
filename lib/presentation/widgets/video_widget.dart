@@ -1,11 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:logger/logger.dart';
 import 'package:my_tube/core/util/helper_functions.dart';
 import 'package:my_tube/domain/entities/video.dart';
 import 'package:my_tube/presentation/bloc/reels_bloc.dart';
-import 'package:my_tube/presentation/pages/reels_homepage.dart';
 
 import '../pages/reels.dart';
 
