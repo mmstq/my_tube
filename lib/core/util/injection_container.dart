@@ -1,6 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
-import 'package:my_tube/presentation/bloc/reels_home_bloc.dart';
+import 'package:my_tube/presentation/bloc/reels_feed_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:my_tube/core/util/cache_util.dart';
 import 'package:my_tube/data/repositories/video_repository_impl.dart';

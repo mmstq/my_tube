@@ -1,6 +1,5 @@
 part of 'reels_bloc.dart';
 
-
 abstract class ReelsEvent extends Equatable {
   const ReelsEvent();
 
@@ -55,4 +54,11 @@ class PageChanged extends ReelsEvent {
 
   @override
   List<Object> get props => [index];
+}
+
+class LoadNextPage extends ReelsEvent {
+  const LoadNextPage();
+
+  @override
+  List<Object> get props => [];
 }

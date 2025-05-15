@@ -1,18 +1,18 @@
-part of 'reels_home_bloc.dart';
+part of 'reels_feed_bloc.dart';
 
 
-abstract class ReelsHomeState extends Equatable {
-  const ReelsHomeState();
+abstract class ReelsFeedState extends Equatable {
+  const ReelsFeedState();
 
   @override
   List<Object> get props => [];
 }
 
-class ReelsHomeInitial extends ReelsHomeState {}
+class ReelsHomeInitial extends ReelsFeedState {}
 
-class ReelsHomeLoading extends ReelsHomeState {}
+class ReelsHomeLoading extends ReelsFeedState {}
 
-class ReelsHomeLoaded extends ReelsHomeState {
+class ReelsHomeLoaded extends ReelsFeedState {
   final List<Video> videos;
   final int page;
   final bool hasReachedMax;
@@ -43,7 +43,7 @@ class ReelsHomeLoaded extends ReelsHomeState {
   List<Object> get props => [videos, page, hasReachedMax, isLoadingMore];
 }
 
-class ReelsHomeError extends ReelsHomeState {
+class ReelsHomeError extends ReelsFeedState {
   final String message;
 
   const ReelsHomeError({required this.message});

@@ -8,7 +8,6 @@ plugins {
 android {
     namespace = "com.example.mytube.my_tube"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = "27.0.12077973"
 
 
     compileOptions {
@@ -39,15 +38,6 @@ android {
         }
     }
 }
-
-dependencies {
-    implementation("com.google.android.exoplayer:exoplayer:2.19.1")
-    implementation("androidx.media3:media3-exoplayer:1.6.1")
-    implementation("androidx.media3:media3-exoplayer-dash:1.6.1")
-    implementation("androidx.media3:media3-ui:1.6.1")
-    implementation("androidx.media3:media3-ui-compose:1.6.1")
-}
-
 flutter {
     source = "../.."
 }

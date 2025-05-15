@@ -10,6 +10,8 @@ part 'reels_state.dart';
 // BLoC
 class ReelsBloc extends Bloc<ReelsEvent, ReelsState> {
   final GetVideos getVideos;
+  static const int pageLimit = 10;
+  bool _isLoading = false;
 
   ReelsBloc({required this.getVideos}) : super(ReelsInitial()) {
     on<FetchVideos>(_onFetchVideos);
@@ -17,6 +19,7 @@ class ReelsBloc extends Bloc<ReelsEvent, ReelsState> {
     on<SelectVideo>(_onSelectVideo);
     on<InitializeReels>(_onInitializeReels);
     on<PageChanged>(_onPageChanged);
+    on<LoadNextPage>(_onLoadNextPage);
   }
 
   Future<void> _onFetchVideos(
@@ -111,6 +114,29 @@ class ReelsBloc extends Bloc<ReelsEvent, ReelsState> {
     final currentState = state;
     if (currentState is ReelsLoaded) {
       emit(currentState.copyWith(currentPage: event.index));
+
+      // Load more if reaching near end (e.g., last 3 videos)
+      if (event.index >= currentState.videos.length - 3 &&
+          !currentState.isLastPage) {
+        add(LoadNextPage());
+      }
+    }
+  }
+
+  Future<void> _onLoadNextPage(
+    LoadNextPage event,
+    Emitter<ReelsState> emit,
+  ) async {
+    if (_isLoading) return;
+
+    final currentState = state;
+    if (currentState is ReelsLoaded && !currentState.isLastPage) {
+      _isLoading = true;
+      try {
+        await _fetchVideosAndEmitState(currentState.page + 1, pageLimit, emit);
+      } finally {
+        _isLoading = false;
+      }
     }
   }
 
@@ -166,5 +192,21 @@ class ReelsBloc extends Bloc<ReelsEvent, ReelsState> {
         emit(ReelsError(e.toString()));
       }
     }
+  }
+
+  // Helper method to check if there are already videos with initial data
+  void initializeWithVideos(List<Video> videos, int initialIndex) {
+    emit(
+      ReelsLoaded(
+        videos: videos,
+        isLastPage: false, // Set to false to allow loading more
+        page: 1,
+        selectedVideoIndex: initialIndex,
+        currentPage: initialIndex,
+      ),
+    );
+
+    // Pre-fetch the next page of videos
+    add(LoadMoreVideos(page: 2, limit: pageLimit));
   }
 }

@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:logger/logger.dart';
-import 'package:my_tube/domain/entities/video.dart';
-import 'package:my_tube/presentation/bloc/reels_home_bloc.dart' as home_bloc;
-import 'package:my_tube/presentation/bloc/reels_bloc.dart';
-import 'package:my_tube/presentation/pages/reels.dart';
+import 'package:my_tube/presentation/bloc/reels_feed_bloc.dart';
 import 'package:my_tube/presentation/widgets/app_bar.dart';
 import 'package:my_tube/presentation/widgets/bottom_bar.dart';
-import 'package:my_tube/presentation/widgets/video_player_item.dart';
 import 'package:my_tube/presentation/widgets/video_widget.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
@@ -20,26 +15,27 @@ class ReelsFeedPage extends StatefulWidget {
 
 class _ReelsFeedPageState extends State<ReelsFeedPage> {
   final ScrollController _scrollController = ScrollController();
-  late final home_bloc.ReelsFeedBloc bloc;
-  bool isFetchingMore = false;
+  late final ReelsFeedBloc bloc;
 
   @override
   void initState() {
     super.initState();
-    bloc = context.read<home_bloc.ReelsFeedBloc>();
-    bloc.add(home_bloc.LoadInitialVideos());
+    bloc = context.read<ReelsFeedBloc>();
+    bloc.add(LoadInitialVideos());
     _scrollController.addListener(_onScroll);
   }
 
   void _onScroll() {
-      if (_scrollController.position.pixels >=
-          _scrollController.position.maxScrollExtent * 0.7 &&
-          !isFetchingMore) {
-        isFetchingMore = true;
-        bloc.add(home_bloc.LoadMoreVideos());
-        Future.delayed(Duration(seconds: 1), () => isFetchingMore = false);
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent * 0.7) {
+      final currentState = bloc.state;
+      if (currentState is ReelsHomeLoaded &&
+          !currentState.isLoadingMore &&
+          !currentState.hasReachedMax) {
+        bloc.add(LoadMoreVideos());
       }
     }
+  }
 
   @override
   void dispose() {
@@ -48,17 +44,16 @@ class _ReelsFeedPageState extends State<ReelsFeedPage> {
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: getAppBar(context),
       bottomNavigationBar: BottomBar(selectedIndex: 0),
-      body: BlocBuilder<home_bloc.ReelsFeedBloc, home_bloc.ReelsHomeState>(
+      body: BlocBuilder<ReelsFeedBloc, ReelsFeedState>(
         builder: (context, state) {
-          if (state is home_bloc.ReelsHomeLoading) {
+          if (state is ReelsHomeInitial || (state is ReelsHomeLoading)) {
             return const Center(child: CircularProgressIndicator());
-          } else if (state is home_bloc.ReelsHomeError) {
+          } else if (state is ReelsHomeError) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -66,20 +61,26 @@ class _ReelsFeedPageState extends State<ReelsFeedPage> {
                   Text('Error: ${state.message}'),
                   const SizedBox(height: 12),
                   ElevatedButton(
-                    onPressed: () => bloc.add(home_bloc.LoadInitialVideos()),
+                    onPressed: () => bloc.add(LoadInitialVideos()),
                     child: const Text('Retry'),
                   ),
                 ],
               ),
             );
-          } else if (state is home_bloc.ReelsHomeLoaded) {
+          } else if (state is ReelsHomeLoaded) {
             return RefreshIndicator(
               onRefresh: () async {
-                bloc.add(home_bloc.RefreshVideos());
+                await Future.delayed(Duration(seconds: 1));
+                bloc.add(RefreshVideos());
               },
               child: MasonryGridView.builder(
                 controller: _scrollController,
-                padding: const EdgeInsets.only(bottom: 60),
+                padding: const EdgeInsets.only(
+                  bottom: 60,
+                  left: 4,
+                  right: 4,
+                  top: 8,
+                ),
                 itemCount: state.videos.length + (state.hasReachedMax ? 0 : 1),
                 gridDelegate:
                     const SliverSimpleGridDelegateWithFixedCrossAxisCount(
@@ -89,7 +90,10 @@ class _ReelsFeedPageState extends State<ReelsFeedPage> {
                 crossAxisSpacing: 4,
                 itemBuilder: (context, index) {
                   if (index >= state.videos.length) {
-                    return const Center(child: CircularProgressIndicator());
+                    return const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 16.0),
+                      child: Center(child: CircularProgressIndicator()),
+                    );
                   }
 
                   final video = state.videos[index];
@@ -97,12 +101,7 @@ class _ReelsFeedPageState extends State<ReelsFeedPage> {
                   return Container(
                     height: video.orientation == 'portrait' ? 300 : 170,
                     margin: const EdgeInsets.all(2),
-                    child: buildVideoItem(
-                      video,
-                      context,
-                      index,
-                      state.videos,
-                    ),
+                    child: buildVideoItem(video, context, index, state.videos),
                   );
                 },
               ),

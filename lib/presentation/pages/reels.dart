@@ -15,11 +15,8 @@ class Reels extends StatefulWidget {
 }
 
 class _ReelsState extends State<Reels> {
-  static const int _pageLimit = 10;
   late final PageController _pageController;
   late final ReelsBloc bloc;
-  int _currentPage = 1;
-  bool _isLoading = false;
 
   @override
   void initState() {
@@ -29,37 +26,9 @@ class _ReelsState extends State<Reels> {
 
     if (widget.initialVideos != null && widget.initialVideos!.isNotEmpty) {
       // Use provided videos if navigating from homepage
-      bloc.emit(
-        ReelsLoaded(
-          videos: widget.initialVideos!,
-          isLastPage: false, // Set to false to allow loading more
-          page: 1,
-          selectedVideoIndex: widget.initialIndex,
-          currentPage: widget.initialIndex,
-        ),
-      );
-
-      // Pre-fetch the next page of videos
-      _loadMoreVideos(2);
+      bloc.initializeWithVideos(widget.initialVideos!, widget.initialIndex);
     } else {
-      bloc.add(FetchVideos(page: 1, limit: _pageLimit));
-    }
-  }
-
-  Future<void> _loadMoreVideos(int page) async {
-    if (_isLoading) return;
-
-    setState(() {
-      _isLoading = true;
-    });
-
-    try {
-      bloc.add(LoadMoreVideos(page: page, limit: _pageLimit));
-      _currentPage = page;
-    } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      bloc.add(FetchVideos(page: 1, limit: ReelsBloc.pageLimit));
     }
   }
 
@@ -97,18 +66,7 @@ class _ReelsState extends State<Reels> {
                     scrollDirection: Axis.vertical,
                     itemCount: state.videos.length,
                     onPageChanged: (index) {
-                      final currentState = bloc.state;
-                      if (currentState is ReelsLoaded) {
-                        bloc.emit(currentState.copyWith(currentPage: index));
-                      }
-
-                      // Load more if reaching near end (e.g., last 3 videos)
-                      if (currentState is ReelsLoaded &&
-                          index >= currentState.videos.length - 3 &&
-                          !_isLoading &&
-                          !currentState.isLastPage) {
-                        _loadMoreVideos(_currentPage + 1);
-                      }
+                      bloc.add(PageChanged(index));
                     },
                     itemBuilder: (context, index) {
                       if (index >= state.videos.length) {
@@ -133,7 +91,7 @@ class _ReelsState extends State<Reels> {
                       child: Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.5),
+                          color: Colors.black.withValues(alpha: 0.5),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
@@ -157,7 +115,9 @@ class _ReelsState extends State<Reels> {
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: () {
-                        bloc.add(FetchVideos(page: 1, limit: _pageLimit));
+                        bloc.add(
+                          FetchVideos(page: 1, limit: ReelsBloc.pageLimit),
+                        );
                       },
                       child: const Text('Retry'),
                     ),

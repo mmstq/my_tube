@@ -8,7 +8,12 @@ PreferredSize getAppBar(BuildContext context) {
     child: SafeArea(
       maintainBottomViewPadding: true,
       child: Container(
-        color: Colors.white,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 10, offset: const Offset(0, 2)),
+          ],
+        ),
         child: Column(
           children: [
             const SizedBox(height: 12),
@@ -16,11 +21,7 @@ PreferredSize getAppBar(BuildContext context) {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               child: Row(
                 children: [
-                  const Icon(
-                    TablerIcons.menu_2,
-                    size: 28,
-                    color: Colors.black54,
-                  ),
+                  const Icon(TablerIcons.menu_2, size: 28, color: Colors.black54),
                   const SizedBox(width: 16),
                   Expanded(
                     child: Container(
@@ -29,13 +30,7 @@ PreferredSize getAppBar(BuildContext context) {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: Colors.grey.shade300),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.shade300,
-                            blurRadius: 4,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
+                        boxShadow: [BoxShadow(color: Colors.grey.shade300, blurRadius: 4, offset: const Offset(0, 2))],
                       ),
                       child: TextField(
                         decoration: InputDecoration(
@@ -44,10 +39,7 @@ PreferredSize getAppBar(BuildContext context) {
                           border: InputBorder.none,
                           suffixIcon: InkWell(
                             onTap: () => FocusScope.of(context).unfocus(),
-                            child: const Icon(
-                              Icons.arrow_forward_rounded,
-                              color: Colors.black54,
-                            ),
+                            child: const Icon(Icons.arrow_forward_rounded, color: Colors.black54),
                           ),
                         ),
                       ),
@@ -65,18 +57,14 @@ PreferredSize getAppBar(BuildContext context) {
                 itemCount: 6,
                 separatorBuilder: (_, __) => const SizedBox(width: 8),
                 itemBuilder: (_, index) {
-                  final labels = [
-                    'All',
-                    'Beauty & Fashion',
-                    'Football',
-                    'Cricket',
-                    'News',
-                    'Politics',
-                  ];
+                  final labels = ['All', 'Beauty & Fashion', 'Football', 'Cricket', 'News', 'Politics'];
                   return FilterChip(
                     label: Text(
                       labels[index],
-                      style: TextStyle(fontWeight: FontWeight.w600, color: tab == labels[index] ? Colors.white : Colors.black54),
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: tab == labels[index] ? Colors.white : Colors.black54,
+                      ),
                     ),
                     selected: index == 0,
                     showCheckmark: false,
@@ -84,9 +72,7 @@ PreferredSize getAppBar(BuildContext context) {
                     selectedColor: Colors.lightBlue,
                     onSelected: (_) {},
                     side: BorderSide.none,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   );
                 },
               ),

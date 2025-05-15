@@ -9,26 +9,15 @@ import 'package:my_tube/presentation/pages/reels_homepage.dart';
 
 import '../pages/reels.dart';
 
-Widget buildVideoItem(
-  Video video,
-  BuildContext context,
-  int selectedIndex,
-  List<Video> currentVideos,
-) {
+Widget buildVideoItem(Video video, BuildContext context, int selectedIndex, List<Video> currentVideos) {
   final isHorizontal = video.orientation == 'landscape';
   return GestureDetector(
     onTap: () {
-      Navigator.push(
+      navigateTo(
         context,
-        MaterialPageRoute(
-          builder:
-              (_) => BlocProvider.value(
-                value: context.read<ReelsBloc>(),
-                child: Reels(
-                  initialVideos: currentVideos,
-                  initialIndex: selectedIndex,
-                ),
-              ),
+        BlocProvider.value(
+          value: context.read<ReelsBloc>(),
+          child: Reels(initialVideos: currentVideos, initialIndex: selectedIndex),
         ),
       );
     },
@@ -48,16 +37,12 @@ Widget buildVideoItem(
               placeholder:
                   (_, __) => Container(
                     color: Colors.grey[900],
-                    child: const Center(
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    ),
+                    child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
                   ),
               errorWidget:
                   (_, __, ___) => Container(
                     color: Colors.grey[900],
-                    child: const Center(
-                      child: Icon(Icons.error_outline, color: Colors.white54),
-                    ),
+                    child: const Center(child: Icon(Icons.error_outline, color: Colors.white54)),
                   ),
             ),
           ),
@@ -72,11 +57,7 @@ Widget buildVideoItem(
               ),
               child: Text(
                 formatDuration(video.duration ?? 0),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w500,
-                ),
+                style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.w500),
               ),
             ),
           ),
@@ -89,31 +70,29 @@ Widget buildVideoItem(
                   padding: const EdgeInsets.symmetric(vertical: 4),
                   child: Row(
                     children: [
-                      CircleAvatar(
-                        radius: 16,
-                        backgroundColor: Colors.grey.shade800,
-                        backgroundImage:
-                            video.user.profilePictureCdn?.startsWith('http') ==
-                                    true
-                                ? CachedNetworkImageProvider(
-                                  video.user.profilePictureCdn!,
-                                )
-                                : null,
-                        child:
-                            video.user.profilePictureCdn?.startsWith('http') !=
-                                    true
-                                ? Text(
-                                  video.user.fullName?.isNotEmpty == true
-                                      ? video.user.fullName![0].toUpperCase()
-                                      : '?',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                )
-                                : null,
+                      CachedNetworkImage(
+                        imageUrl: video.user.profilePictureCdn ?? '',
+                        imageBuilder:
+                            (context, imageProvider) => CircleAvatar(
+                              radius: 16,
+                              backgroundColor: Colors.grey.shade800,
+                              backgroundImage: imageProvider,
+                            ),
+                        errorWidget: (context, url, error) {
+                          final fallbackInitial =
+                              (video.user.fullName?.isNotEmpty == true) ? video.user.fullName![0].toUpperCase() : '?';
+                          return CircleAvatar(
+                            radius: 16,
+                            backgroundColor: Colors.grey.shade800,
+                            child: Text(
+                              fallbackInitial,
+                              style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                            ),
+                          );
+                        },
+                        placeholder: (context, url) => CircleAvatar(radius: 16, backgroundColor: Colors.grey.shade800),
                       ),
+
                       const SizedBox(width: 8),
                       Expanded(
                         child: Column(
@@ -121,20 +100,13 @@ Widget buildVideoItem(
                           children: [
                             Text(
                               video.title ?? 'No Title',
-                              style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.black54,
-                              ),
+                              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Colors.black54),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
                             Text(
                               video.user.fullName ?? 'Unknown',
-                              style: TextStyle(
-                                color: Colors.grey,
-                                fontSize: 11,
-                              ),
+                              style: TextStyle(color: Colors.grey, fontSize: 11),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -150,33 +122,21 @@ Widget buildVideoItem(
                 bottom: 8,
                 right: 8,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.black26,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                  decoration: BoxDecoration(color: Colors.black26, borderRadius: BorderRadius.circular(8)),
                   child: Row(
                     children: [
                       CircleAvatar(
                         radius: 16,
                         backgroundColor: Colors.grey.shade800,
                         backgroundImage:
-                            video.user.profilePictureCdn?.startsWith('http') ==
-                                    true
-                                ? CachedNetworkImageProvider(
-                                  video.user.profilePictureCdn!,
-                                )
+                            video.user.profilePictureCdn?.startsWith('http') == true
+                                ? CachedNetworkImageProvider(video.user.profilePictureCdn!)
                                 : null,
                         child:
-                            video.user.profilePictureCdn?.startsWith('http') !=
-                                    true
+                            video.user.profilePictureCdn?.startsWith('http') != true
                                 ? Text(
-                                  video.user.fullName?.isNotEmpty == true
-                                      ? video.user.fullName![0].toUpperCase()
-                                      : '?',
+                                  video.user.fullName?.isNotEmpty == true ? video.user.fullName![0].toUpperCase() : '?',
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontSize: 12,
@@ -192,20 +152,13 @@ Widget buildVideoItem(
                           children: [
                             Text(
                               video.title ?? 'No Title',
-                              style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.white,
-                              ),
+                              style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, color: Colors.white),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
                             Text(
                               video.user.fullName ?? 'Unknown',
-                              style: TextStyle(
-                                color: Colors.grey.shade200,
-                                fontSize: 11,
-                              ),
+                              style: TextStyle(color: Colors.grey.shade200, fontSize: 11),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),

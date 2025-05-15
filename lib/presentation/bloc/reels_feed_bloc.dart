@@ -5,11 +5,11 @@ import 'package:my_tube/domain/usecases/get_videos.dart';
 
 import '../../domain/entities/video.dart';
 
-part 'reels_home_event.dart';
+part 'reels_feed_event.dart';
 
-part 'reels_home_state.dart';
+part 'reels_feed_state.dart';
 
-class ReelsFeedBloc extends Bloc<ReelsHomeEvent, ReelsHomeState> {
+class ReelsFeedBloc extends Bloc<ReelsFeedEvent, ReelsFeedState> {
   final GetVideos getVideos;
   static const int pageLimit = 10;
 
@@ -19,7 +19,7 @@ class ReelsFeedBloc extends Bloc<ReelsHomeEvent, ReelsHomeState> {
     on<RefreshVideos>(_onRefreshVideos);
   }
 
-  Future<void> _onLoadInitialVideos(LoadInitialVideos event, Emitter<ReelsHomeState> emit) async {
+  Future<void> _onLoadInitialVideos(LoadInitialVideos event, Emitter<ReelsFeedState> emit) async {
     emit(ReelsHomeLoading());
 
     try {
@@ -32,7 +32,7 @@ class ReelsFeedBloc extends Bloc<ReelsHomeEvent, ReelsHomeState> {
     }
   }
 
-  Future<void> _onLoadMoreVideos(LoadMoreVideos event, Emitter<ReelsHomeState> emit) async {
+  Future<void> _onLoadMoreVideos(LoadMoreVideos event, Emitter<ReelsFeedState> emit) async {
     final currentState = state;
 
     if (currentState is ReelsHomeLoaded && !currentState.hasReachedMax && !currentState.isLoadingMore) {
@@ -59,7 +59,7 @@ class ReelsFeedBloc extends Bloc<ReelsHomeEvent, ReelsHomeState> {
     }
   }
 
-  Future<void> _onRefreshVideos(RefreshVideos event, Emitter<ReelsHomeState> emit) async {
+  Future<void> _onRefreshVideos(RefreshVideos event, Emitter<ReelsFeedState> emit) async {
     try {
       final videos = await getVideos(Params(page: 1, limit: pageLimit));
       final hasReachedMax = videos.length < pageLimit;
