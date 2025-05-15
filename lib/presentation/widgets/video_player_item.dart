@@ -29,7 +29,6 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
 
   Future<void> _initializeVideoController() async {
     final videoUrl = widget.video.cdnUrl ?? widget.video.url;
-    Logger().d(videoUrl);
     if (videoUrl == null) {
       debugPrint('Error: No video URL available');
       return;
@@ -53,12 +52,11 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
         });
       }
     } catch (e) {
-      debugPrint('Error initializing video: $e');
+      final endMessage = e.toString().contains('Source error')?'Source error': e.toString();
       if (mounted) {
-        Logger().d(e.toString());
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('Error playing video: ${e.toString()}'), backgroundColor: Colors.red));
+        ).showSnackBar(SnackBar(content: Text('Error playing video: $endMessage'), backgroundColor: Colors.red));
         Navigator.pop(context);
       }
     }

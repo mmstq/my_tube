@@ -86,26 +86,11 @@ class _ReelsHomePageState extends State<ReelsHomePage> {
                   }
 
                   final video = state.videos[index];
-                  // Calculate aspect ratio using video dimensions
-                  double aspectRatio = 9 / 16; // default vertical aspect ratio
-
-                  if (video.videoWidth != null &&
-                      video.videoHeight != null &&
-                      video.videoHeight! > 0 &&
-                      video.videoWidth! > 0) {
-                    aspectRatio = video.videoWidth! / video.videoHeight!;
-                  }
-
-                  // Calculate item height based on screen width and aspect ratio
-                  final screenWidth = MediaQuery.of(context).size.width;
-                  final itemWidth =
-                      (screenWidth / 2) - 4; // 2 columns with 4px spacing
-                  final itemHeight = itemWidth / aspectRatio;
 
                   return Container(
-                  height: itemHeight,
+                  height: video.orientation== 'portrait' ? 300 : 180,
                   margin: const EdgeInsets.all(2),
-                  child: buildVideoItem(video, context, height: itemHeight),
+                  child: buildVideoItem(video, context),
                   );
                 },
               ),
@@ -124,8 +109,6 @@ class ReelsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Logger().d(initialVideo.cdnUrl);
-    Logger().d(initialVideo.url);
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
