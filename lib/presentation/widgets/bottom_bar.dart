@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:my_tube/core/util/helper_functions.dart';
@@ -6,11 +5,7 @@ import 'package:my_tube/presentation/pages/reels.dart';
 
 class BottomBar extends StatelessWidget {
   final int selectedIndex;
-  const BottomBar({
-    super.key,
-    required this.selectedIndex,
-
-  });
+  const BottomBar({super.key, required this.selectedIndex});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +13,7 @@ class BottomBar extends StatelessWidget {
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, -5),
           ),
@@ -26,9 +21,9 @@ class BottomBar extends StatelessWidget {
       ),
       child: BottomNavigationBar(
         currentIndex: selectedIndex,
-        onTap: (i){
-          if(i == 1){
-            navigateTo(context, Reels());
+        onTap: (i) {
+          if (i == 1) {
+            navigateTo(context, const Reels());
           }
         },
         showSelectedLabels: false,

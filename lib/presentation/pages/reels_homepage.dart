@@ -9,21 +9,21 @@ import 'package:my_tube/presentation/widgets/video_player_item.dart';
 import 'package:my_tube/presentation/widgets/video_widget.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
-class ReelsHomePage extends StatefulWidget {
-  const ReelsHomePage({super.key});
+class ReelsFeedPage extends StatefulWidget {
+  const ReelsFeedPage({super.key});
 
   @override
-  State<ReelsHomePage> createState() => _ReelsHomePageState();
+  State<ReelsFeedPage> createState() => _ReelsFeedPageState();
 }
 
-class _ReelsHomePageState extends State<ReelsHomePage> {
+class _ReelsFeedPageState extends State<ReelsFeedPage> {
   final ScrollController _scrollController = ScrollController();
-  late final ReelsHomeBloc bloc;
+  late final ReelsFeedBloc bloc;
 
   @override
   void initState() {
     super.initState();
-    bloc = context.read<ReelsHomeBloc>();
+    bloc = context.read<ReelsFeedBloc>();
     bloc.add(LoadInitialVideos());
     _scrollController.addListener(_onScroll);
   }
@@ -47,7 +47,7 @@ class _ReelsHomePageState extends State<ReelsHomePage> {
     return Scaffold(
       appBar: getAppBar(context),
       bottomNavigationBar: BottomBar(selectedIndex: 0),
-      body: BlocBuilder<ReelsHomeBloc, ReelsHomeState>(
+      body: BlocBuilder<ReelsFeedBloc, ReelsHomeState>(
         builder: (context, state) {
           if (state is ReelsHomeLoading) {
             return const Center(child: CircularProgressIndicator());

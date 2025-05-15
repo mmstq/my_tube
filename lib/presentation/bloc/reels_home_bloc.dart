@@ -8,11 +8,11 @@ import '../../domain/entities/video.dart';
 part 'reels_home_event.dart';
 part 'reels_home_state.dart';
 
-class ReelsHomeBloc extends Bloc<ReelsHomeEvent, ReelsHomeState> {
+class ReelsFeedBloc extends Bloc<ReelsHomeEvent, ReelsHomeState> {
   final GetVideos getVideos;
   static const int pageLimit = 10;
 
-  ReelsHomeBloc({required this.getVideos}) : super(ReelsHomeInitial()) {
+  ReelsFeedBloc({required this.getVideos}) : super(ReelsHomeInitial()) {
     on<LoadInitialVideos>(_onLoadInitialVideos);
     on<LoadMoreVideos>(_onLoadMoreVideos);
     on<RefreshVideos>(_onRefreshVideos);

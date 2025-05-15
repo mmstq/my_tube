@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:my_tube/presentation/bloc/video_bloc.dart';
+import 'package:my_tube/presentation/bloc/reels_bloc.dart';
 import 'package:my_tube/presentation/widgets/video_player_item.dart';
 
 class Reels extends StatefulWidget {
@@ -13,16 +13,14 @@ class Reels extends StatefulWidget {
 class _ReelsState extends State<Reels> {
   static const int _pageLimit = 10;
   final PageController _pageController = PageController();
-  late final VideoBloc bloc;
+  late final ReelsBloc bloc;
 
   @override
   void initState() {
     super.initState();
     // Initial load
-    bloc = context.read<VideoBloc>();
-    bloc.add(
-      const FetchVideos(page: 1, limit: _pageLimit),
-    );
+    bloc = context.read<ReelsBloc>();
+    bloc.add(const FetchVideos(page: 1, limit: _pageLimit));
   }
 
   @override
@@ -36,9 +34,9 @@ class _ReelsState extends State<Reels> {
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
-        child: BlocConsumer<VideoBloc, VideoState>(
+        child: BlocConsumer<ReelsBloc, ReelsState>(
           listener: (context, state) {
-            if (state is VideoError) {
+            if (state is ReelsError) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(state.message),
@@ -48,9 +46,9 @@ class _ReelsState extends State<Reels> {
             }
           },
           builder: (context, state) {
-            if (state is VideoInitial || state is VideoLoading) {
+            if (state is ReelsInitial || state is ReelsLoading) {
               return const Center(child: CircularProgressIndicator());
-            } else if (state is VideoPageLoaded) {
+            } else if (state is ReelsLoaded) {
               return Stack(
                 children: [
                   // Videos PageView
@@ -60,9 +58,13 @@ class _ReelsState extends State<Reels> {
                     itemCount: state.videos.length + (state.isLastPage ? 0 : 1),
                     onPageChanged: (index) {
                       // Load more videos when reaching the end
-                      if (index >= state.videos.length - 2 && !state.isLastPage) {
+                      if (index >= state.videos.length - 2 &&
+                          !state.isLastPage) {
                         bloc.add(
-                          LoadMoreVideos(page: state.page + 1, limit: _pageLimit),
+                          LoadMoreVideos(
+                            page: state.page + 1,
+                            limit: _pageLimit,
+                          ),
                         );
                       }
                     },
@@ -93,9 +95,7 @@ class _ReelsState extends State<Reels> {
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: () {
-                        bloc.add(
-                          const FetchVideos(page: 1, limit: _pageLimit),
-                        );
+                        bloc.add(const FetchVideos(page: 1, limit: _pageLimit));
                       },
                       child: const Text('Retry'),
                     ),
