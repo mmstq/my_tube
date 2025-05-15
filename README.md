@@ -37,7 +37,6 @@ The application follows Clean Architecture principles with the following layers:
 - **get_it**: Dependency injection
 - **shared_preferences**: Local storage for caching
 - **video_player**: Video playback functionality
-- **visibility_detector**: Detect when videos are visible on screen
 - **equatable**: Value equality without boilerplate code
 - **cached_network_image**: Image caching and loading
 
