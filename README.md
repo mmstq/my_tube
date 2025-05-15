@@ -11,6 +11,21 @@ A Flutter application that fetches and displays video data in a reels-style inte
 - **Clean Architecture**: Separation of concerns with domain, data, and presentation layers
 - **Error Handling**: Graceful error handling for API failures and JSON parsing errors
 
+## Design
+
+1. Design inspiration is taken from Reab.com
+2. Bottom Bar
+3. AppBar
+4. Search Bar and Search Chips
+
+## Demo Videos
+
+### Android Demo
+[![Android Demo](myTube(android).mp4)](myTube(android).mp4)
+
+### iOS Demo
+[![iOS Demo](myTube(ios).mp4)](myTube(ios).mp4)
+
 ## Architecture
 
 The application follows Clean Architecture principles with the following layers:
@@ -38,6 +53,7 @@ The application follows Clean Architecture principles with the following layers:
 - **shared_preferences**: Local storage for caching
 - **video_player**: Video playback functionality
 - **equatable**: Value equality without boilerplate code
+- **hugeicons**: High quality stroke round icons
 - **cached_network_image**: Image caching and loading
 
 ## Getting Started
@@ -45,6 +61,12 @@ The application follows Clean Architecture principles with the following layers:
 1. Clone the repository
 2. Run `flutter pub get` to install dependencies
 3. Run `flutter run` to start the application
+
+## If Not Working
+
+1. Delete .idea folder in Android Studio
+2. Restart Android Studio
+3. Run `flutter pub get` to install dependencies
 
 ## API
 
