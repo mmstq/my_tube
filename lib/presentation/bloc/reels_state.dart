@@ -15,30 +15,30 @@ class ReelsLoaded extends ReelsState {
   final List<Video> videos;
   final bool isLastPage;
   final int page;
-  final int? selectedVideoIndex;
   final int currentPage;
+  final int? selectedVideoIndex;
 
   const ReelsLoaded({
     required this.videos,
     required this.isLastPage,
     required this.page,
-    this.selectedVideoIndex,
     required this.currentPage,
+    this.selectedVideoIndex,
   });
 
   ReelsLoaded copyWith({
     List<Video>? videos,
     bool? isLastPage,
     int? page,
-    int? selectedVideoIndex,
     int? currentPage,
+    int? selectedVideoIndex,
   }) {
     return ReelsLoaded(
       videos: videos ?? this.videos,
       isLastPage: isLastPage ?? this.isLastPage,
       page: page ?? this.page,
-      selectedVideoIndex: selectedVideoIndex ?? this.selectedVideoIndex,
       currentPage: currentPage ?? this.currentPage,
+      selectedVideoIndex: selectedVideoIndex ?? this.selectedVideoIndex,
     );
   }
 
@@ -51,6 +51,8 @@ class ReelsLoaded extends ReelsState {
     currentPage,
   ];
 }
+
+
 
 class ReelsError extends ReelsState {
   final String message;

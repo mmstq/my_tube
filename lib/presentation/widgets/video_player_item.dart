@@ -118,16 +118,6 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
 
           // Overlay with user info and actions
           Positioned(
-            top: 16,
-            left: 8,
-            child: IconButton(
-              color: Colors.white,
-              style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.white24)),
-              onPressed: () => Navigator.pop(context),
-              icon: Icon(TablerIcons.x),
-            ),
-          ),
-          Positioned(
             bottom: 110,
             left: 16,
             child: Text(

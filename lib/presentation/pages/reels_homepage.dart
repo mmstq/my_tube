@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logger/logger.dart';
 import 'package:my_tube/domain/entities/video.dart';
-import 'package:my_tube/presentation/bloc/reels_home_bloc.dart';
+import 'package:my_tube/presentation/bloc/reels_home_bloc.dart' as home_bloc;
+import 'package:my_tube/presentation/bloc/reels_bloc.dart';
+import 'package:my_tube/presentation/pages/reels.dart';
 import 'package:my_tube/presentation/widgets/app_bar.dart';
 import 'package:my_tube/presentation/widgets/bottom_bar.dart';
 import 'package:my_tube/presentation/widgets/video_player_item.dart';
@@ -18,20 +20,20 @@ class ReelsFeedPage extends StatefulWidget {
 
 class _ReelsFeedPageState extends State<ReelsFeedPage> {
   final ScrollController _scrollController = ScrollController();
-  late final ReelsFeedBloc bloc;
+  late final home_bloc.ReelsFeedBloc bloc;
 
   @override
   void initState() {
     super.initState();
-    bloc = context.read<ReelsFeedBloc>();
-    bloc.add(LoadInitialVideos());
+    bloc = context.read<home_bloc.ReelsFeedBloc>();
+    bloc.add(home_bloc.LoadInitialVideos());
     _scrollController.addListener(_onScroll);
   }
 
   void _onScroll() {
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent * 0.7) {
-      bloc.add(LoadMoreVideos());
+      bloc.add(home_bloc.LoadMoreVideos());
     }
   }
 
@@ -42,16 +44,17 @@ class _ReelsFeedPageState extends State<ReelsFeedPage> {
     super.dispose();
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: getAppBar(context),
       bottomNavigationBar: BottomBar(selectedIndex: 0),
-      body: BlocBuilder<ReelsFeedBloc, ReelsHomeState>(
+      body: BlocBuilder<home_bloc.ReelsFeedBloc, home_bloc.ReelsHomeState>(
         builder: (context, state) {
-          if (state is ReelsHomeLoading) {
+          if (state is home_bloc.ReelsHomeLoading) {
             return const Center(child: CircularProgressIndicator());
-          } else if (state is ReelsHomeError) {
+          } else if (state is home_bloc.ReelsHomeError) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -59,25 +62,25 @@ class _ReelsFeedPageState extends State<ReelsFeedPage> {
                   Text('Error: ${state.message}'),
                   const SizedBox(height: 12),
                   ElevatedButton(
-                    onPressed: () => bloc.add(LoadInitialVideos()),
+                    onPressed: () => bloc.add(home_bloc.LoadInitialVideos()),
                     child: const Text('Retry'),
                   ),
                 ],
               ),
             );
-          } else if (state is ReelsHomeLoaded) {
+          } else if (state is home_bloc.ReelsHomeLoaded) {
             return RefreshIndicator(
               onRefresh: () async {
-                bloc.add(RefreshVideos());
+                bloc.add(home_bloc.RefreshVideos());
               },
               child: MasonryGridView.builder(
                 controller: _scrollController,
                 padding: const EdgeInsets.only(bottom: 60),
                 itemCount: state.videos.length + (state.hasReachedMax ? 0 : 1),
                 gridDelegate:
-                const SliverSimpleGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                ),
+                    const SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                    ),
                 mainAxisSpacing: 4,
                 crossAxisSpacing: 4,
                 itemBuilder: (context, index) {
@@ -88,9 +91,14 @@ class _ReelsFeedPageState extends State<ReelsFeedPage> {
                   final video = state.videos[index];
 
                   return Container(
-                  height: video.orientation== 'portrait' ? 300 : 170,
-                  margin: const EdgeInsets.all(2),
-                  child: buildVideoItem(video, context),
+                    height: video.orientation == 'portrait' ? 300 : 170,
+                    margin: const EdgeInsets.all(2),
+                    child: buildVideoItem(
+                      video,
+                      context,
+                      index,
+                      state.videos,
+                    ),
                   );
                 },
               ),
@@ -102,24 +110,3 @@ class _ReelsFeedPageState extends State<ReelsFeedPage> {
     );
   }
 }
-
-class ReelsPage extends StatelessWidget {
-  final Video initialVideo;
-  const ReelsPage({super.key, required this.initialVideo});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: SafeArea(
-        child: VideoPlayerItem(
-          video: initialVideo,
-          heroTag: 'video-${initialVideo.id}',
-        ),
-      ),
-    );
-  }
-}
-
-
-
