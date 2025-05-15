@@ -54,7 +54,7 @@ Widget buildVideoItem(Video video, BuildContext context) {
           isHorizontal
               ? Positioned(
                 left: isHorizontal ? 0 : 8,
-                bottom: 8,
+                bottom: 0,
                 right: isHorizontal ? 0 : 8,
                 child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 4),

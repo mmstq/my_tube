@@ -88,7 +88,7 @@ class _ReelsHomePageState extends State<ReelsHomePage> {
                   final video = state.videos[index];
 
                   return Container(
-                  height: video.orientation== 'portrait' ? 300 : 180,
+                  height: video.orientation== 'portrait' ? 300 : 170,
                   margin: const EdgeInsets.all(2),
                   child: buildVideoItem(video, context),
                   );
