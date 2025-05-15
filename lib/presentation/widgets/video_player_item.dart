@@ -18,6 +18,8 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
   late VideoPlayerController _controller;
   bool _isInitialized = false;
   bool _isPlaying = false;
+  bool _isLoading = true;
+  bool _isError = false;
 
   @override
   void initState() {
@@ -41,6 +43,7 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
       if (mounted) {
         setState(() {
           _isInitialized = true;
+          _isLoading = false;
         });
         // Auto-play video after initialization
         _controller.play();
@@ -49,12 +52,14 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
         });
       }
     } catch (e) {
-      final endMessage = e.toString().contains('Source error')?'Source error': e.toString();
+      setState(() {
+        _isError = true;
+      });
+      final endMessage = e.toString().contains('Source error') ? 'Source error' : e.toString();
       if (mounted) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('Error playing video: $endMessage'), backgroundColor: Colors.red));
-        Navigator.pop(context);
       }
     }
   }
@@ -92,26 +97,11 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
           _isInitialized
               ? AspectRatio(aspectRatio: _controller.value.aspectRatio, child: VideoPlayer(_controller))
               : widget.video.thumbCdnUrl != null && widget.video.thumbCdnUrl!.isNotEmpty
-              ? Image.network(
-                widget.video.thumbCdnUrl!,
-                fit: BoxFit.cover,
-                width: double.infinity,
-                errorBuilder: (context, error, stackTrace) {
-                  return const Center(child: CircularProgressIndicator());
-                },
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return Center(
-                    child: CircularProgressIndicator(
-                      value:
-                          loadingProgress.expectedTotalBytes != null
-                              ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                              : null,
-                    ),
-                  );
-                },
-              )
+              ? Image.network(widget.video.thumbCdnUrl!, fit: BoxFit.cover, width: double.infinity)
               : const Center(child: CircularProgressIndicator()),
+
+          // Loading indicator
+          if (_isLoading) getLoadingOrErrorWidget(),
 
           // Overlay with user info and actions
           Positioned(
@@ -243,6 +233,25 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
           // Play/Pause indicator
           if (!_isPlaying && _isInitialized)
             Icon(Icons.play_arrow, size: 80, color: Colors.white.withValues(alpha: 0.7)),
+        ],
+      ),
+    );
+  }
+
+  getLoadingOrErrorWidget() {
+    return Container(
+      padding: EdgeInsets.all(12),
+      decoration: BoxDecoration(color: Colors.black54, borderRadius: BorderRadius.circular(16)),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _isError? Icon(HugeIcons.strokeRoundedVideoOff, color: Colors.white,): CircularProgressIndicator(
+            strokeWidth: 2,
+            strokeCap: StrokeCap.round,
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+          ),
+          const SizedBox(height: 8),
+          Text(_isError?'Failed to play':'Loading video', style: const TextStyle(color: Colors.white)),
         ],
       ),
     );
