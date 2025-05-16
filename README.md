@@ -100,3 +100,7 @@ GET https://backend-cj4o057m.fctl.app/bytes/scroll?page=1&limit=10
 - I am using the orientation property to determine if the video is shorts or horizontal
 
 - As last page is not available, I am deciding last page by checking if the next page has empty data
+
+- App Icon and Splash Screen are also added
+
+- The app is working fine on both Android and iOS devices
