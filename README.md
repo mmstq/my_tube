@@ -97,4 +97,6 @@ GET https://backend-cj4o057m.fctl.app/bytes/scroll?page=1&limit=10
 - Moreover, to be certain, I checked URLs in other video players, like VLC and MX Player but not working.
 - The app handles these cases gracefully by showing an error icon on video
 
-- Note: I am deciding shorts or horizontal videos by orientation property in the video
+- I am using the orientation property to determine if the video is shorts or horizontal
+
+- As last page is not available, I am deciding last page by checking if the next page has empty data
