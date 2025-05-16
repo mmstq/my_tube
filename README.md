@@ -90,9 +90,11 @@ GET https://backend-cj4o057m.fctl.app/bytes/scroll?page=1&limit=10
 - Handles errors gracefully with user feedback
 - Follows Flutter best practices for code organization and structure
 
-## Some URLs are Invalid
+## Notes
 - Some URLs in the API response are invalid or broken
 - These URLs return 403(forbidden) http status code
 - I checked them, they are not private video either
 - Moreover, to be certain, I checked URLs in other video players, like VLC and MX Player but not working.
 - The app handles these cases gracefully by showing an error icon on video
+
+- Note: I am deciding shorts or horizontal videos by orientation property in the video
