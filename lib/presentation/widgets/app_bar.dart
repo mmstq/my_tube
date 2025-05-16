@@ -7,7 +7,6 @@ PreferredSize getAppBar(BuildContext context) {
   return PreferredSize(
     preferredSize: const Size.fromHeight(148),
     child: SafeArea(
-      maintainBottomViewPadding: true,
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,

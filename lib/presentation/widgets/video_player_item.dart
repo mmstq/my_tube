@@ -55,12 +55,7 @@ class _VideoPlayerItemState extends State<VideoPlayerItem> {
       setState(() {
         _isError = true;
       });
-      final endMessage = e.toString().contains('Source error') ? 'Source error' : e.toString();
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error playing video: $endMessage'), backgroundColor: Colors.red));
-      }
+
     }
   }
 
